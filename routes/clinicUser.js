@@ -19,7 +19,7 @@ router.post('/login', (req, response) => {
   const loginPw = crypto.createHmac('sha256', config.password_SHA_key).update(input.Password).digest('hex')
 
   const query = `
-  SELECT clinicName, phoneNo, address, email, cid 
+  SELECT clinicName, phoneNo, address, email, cid, role 
   from clinic 
   where email=? and password=?`
 
@@ -40,19 +40,21 @@ router.put('/create', (req, response) => {
   var input = req.body
   if (input.Email == null || input.Password == null || input.ClinicName == null
     || input.Phone == null || input.Address == null) {
-    response.send(RES(-9996, "missing input parama"))
+    response.send(RES(-9996, "missing input param"))
     return
   }
 
   const hashPw = crypto.createHmac('sha256', config.password_SHA_key).update(input.Password).digest('hex')
 
+  const role = "Patient"
+
   const query = `
   Insert into clinic
-  (email, password, clinicName, phoneNo, address)
+  (email, password, clinicName, phoneNo, address, role)
   values
-  (?, ?, ?, ?, ?)`
+  (?, ?, ?, ?, ?, ?)`
 
-  db.makeSqlQuery(query, [input.Email, hashPw, input.ClinicName, input.Phone, input.Address]).then(info => {
+  db.makeSqlQuery(query, [input.Email, hashPw, input.ClinicName, input.Phone, input.Address, role]).then(info => {
     response.send(RES(1, "create account success"))
   }).catch(err => {
     if (err.errno == 1062) {
