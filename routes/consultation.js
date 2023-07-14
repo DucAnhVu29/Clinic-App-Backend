@@ -56,7 +56,7 @@ router.put('/create', (req, response) => {
   }
 
   const appointmentQuery = `
-  Select doctorName, patientName from appointment where id = ?
+  Select doctorName, patientName from appointment where id = ? and status = 1
   `
 
   db.makeSqlQuery(appointmentQuery, input.AppointmentId).then(info => {
