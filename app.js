@@ -23,6 +23,7 @@ app.use('/user', require('./routes/clinicUser'))
 app.use(CustomMiddleWare.authorization)
 app.use(CustomMiddleWare.updateLastAction)
 app.use('/consultation', require('./routes/consultation'))
+app.use('/appointment', require('./routes/appointment.js'))
 
 app.listen(config.listeningPort)
 schedule.startDailyClearExpiredTokenJob()
