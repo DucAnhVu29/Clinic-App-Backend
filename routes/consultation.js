@@ -61,7 +61,11 @@ router.put('/create', (req, response) => {
 
   db.makeSqlQuery(appointmentQuery, input.AppointmentId).then(info => {
     const names = info[0];
-    console.log("🚀 ~ file: consultation.js:71 ~ db.makeSqlQuery ~ names:", names)
+
+    if (typeof (names) == "undefined") {
+      response.send(RES(-1, "Appointment already Cancel"))
+      return
+    }
 
     const query = `
     Insert into consultation
