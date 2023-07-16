@@ -16,14 +16,14 @@ router.get('/record', (req, response) => {
 
       if (role == "Doctor") {
          query = `
-         SELECT id, doctorName, patientName, time
+         SELECT id, doctorName, patientName, time, status
          from appointment 
          where doctorId= ? and status = 1
          order by time asc
          limit 10`
       } else {
          query = `
-      SELECT id, doctorName, patientName, time
+      SELECT id, doctorName, patientName, time, status
       from appointment 
       where patientId= ?
       order by time desc
@@ -31,7 +31,29 @@ router.get('/record', (req, response) => {
       }
 
       db.makeSqlQuery(query, [req.CID]).then(info => {
-         response.send(RES(1, info))
+
+         if (role != "Doctor") {
+            const appointmentList = info.filter(element => {
+               return element.status != 0;
+            });
+
+            const queryCheckConsul = `
+         SElECT id from consultation where appointmentId = ?`
+
+            info.forEach(element => {
+               if (element.status == 0) {
+                  db.makeSqlQuery(queryCheckConsul, [element.id]).then(info => {
+                     if (info.length > 0) {
+                        appointmentList.push(element)
+                     }
+                  })
+               }
+            });
+
+            setTimeout(() => { response.send(RES(1, appointmentList)) }, 100);
+         } else {
+            response.send(RES(1, info))
+         }
       }).catch(err => {
          errorHandler.handleDbError(response, err)
       })
