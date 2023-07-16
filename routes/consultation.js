@@ -47,7 +47,6 @@ router.get('/appointment', (req, response) => {
 // create consultation record
 router.put('/create', (req, response) => {
   var input = req.body
-  console.log("🚀 ~ file: consultation.js:57 ~ router.put ~ input:", input)
 
   if (input.AppointmentId == null || input.Diagnosis == null || input.Time == null
     || input.Medication == null || input.ConsultationFee == null || input.FollowUp == null) {
@@ -77,10 +76,21 @@ router.put('/create', (req, response) => {
       input.AppointmentId, req.CID, names.doctorName, names.patientName, input.Diagnosis,
       input.Medication, input.ConsultationFee, input.Time, input.FollowUp
     ]
-    console.log("🚀 ~ file: consultation.js:83 ~ db.makeSqlQuery ~ queryParams:", queryParams)
 
 
     db.makeSqlQuery(query, queryParams).then(info => {
+
+      const queryChangeStatus = `
+      Update appointment
+      set status = 0
+      where id = ?`
+
+      db.makeSqlQuery(queryChangeStatus, input.AppointmentId).then(info => {
+        return
+      }).catch(err => {
+        errorHandler.handleDbError(response, err)
+      })
+
       response.send(RES(1, "create consultation record success"))
     }).catch(err => {
       console.log("ERRORRRRRRR")
