@@ -19,7 +19,7 @@ router.get("/", (req, response) => {
 
 router.post("/", (req, response) => {
    var input = req.body;
-   if (input.CID == null || input.message == null) {
+   if (input.message == null) {
       errorHandler.handleMissingInputParams(response);
       return;
    }
@@ -37,7 +37,7 @@ router.post("/", (req, response) => {
           values
           (?, ?, ?)`;
 
-   const queryParams = [input.CID, currentDate, input.message];
+   const queryParams = [req.CID, currentDate, input.message];
 
    db.makeSqlQuery(query, queryParams)
       .then((info) => {
