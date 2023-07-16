@@ -17,10 +17,7 @@ router.get('/record', (req, response) => {
    SELECT role FROM clinic where cid = ?`
 
    db.makeSqlQuery(queryRole, [req.CID]).then(info => {
-      console.log("🚀 ~ file: appointment.js:22 ~ db.makeSqlQuery ~ info:", info)
-
       const role = info[0].role;
-      console.log("🚀 ~ file: appointment.js:23 ~ db.makeSqlQuery ~ role:", role)
 
       var query
 
@@ -78,8 +75,6 @@ router.put('/create', (req, response) => {
             return
          }
 
-         console.log("🚀 ~ file: appointment.js:59 ~ db.makeSqlQuery ~ patientInfo:", patientInfo)
-
          const queryDoctor = `
          SELECT role, clinicName FROM clinic where cid = ?`
 
@@ -92,9 +87,6 @@ router.put('/create', (req, response) => {
             } else {
                response.send(RES(-1, "No doctor info"))
             }
-
-            console.log("🚀 ~ file: appointment.js:74 ~ db.makeSqlQuery ~ doctorInfo:", doctorInfo)
-
 
             const query = `
             Insert into appointment
