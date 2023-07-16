@@ -104,8 +104,11 @@ router.delete("/", (req, response) => {
    }
 
    const query = `
-    DELETE FROM blog
-     where id = ?`;
+   UPDATE blog
+   SET
+   status = 0
+   WHERE id = ?;
+   `;
 
    const queryParams = [input.id];
 
