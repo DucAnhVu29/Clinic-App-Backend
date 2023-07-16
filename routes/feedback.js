@@ -106,9 +106,12 @@ router.delete("/", (req, response) => {
       return;
    }
 
-   const query = `
-    DELETE FROM feedback
-     where id = ?`;
+const query = `
+   UPDATE feedback
+   SET
+   status = 0
+   WHERE id = ?;
+   `;
 
    const queryParams = [input.id];
 
