@@ -44,13 +44,13 @@ router.post("/", (req, response) => {
    // This arrangement can be altered based on how we want the date's format to appear.
    let currentDate = `${day}-${month}-${year}`;
 
-   const query = `
+  const query = `
           Insert into feedback
-          (patientId,createDate, message)
+          (patientId,createDate, message, blogId,status)
           values
-          (?, ?, ?)`;
+          (?, ?, ?, ?, 1)`;
 
-   const queryParams = [req.CID, currentDate, input.message];
+   const queryParams = [input.CID, currentDate, input.message, input.blogId];
 
    db.makeSqlQuery(query, queryParams)
       .then((info) => {
