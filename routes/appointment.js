@@ -57,54 +57,64 @@ router.put('/create', (req, response) => {
       return
    }
 
-   const queryPatient = `
-   SELECT role, clinicName FROM clinic where cid = ?`
+   const queryTime = `
+   SElECT * From appointment where time = ?`
 
-   db.makeSqlQuery(queryPatient, [req.CID]).then(info => {
-
-      var patientInfo = info[0]
-
-      if (patientInfo.role == "Doctor") {
-         response.send(RES(-1, "Doctor cannot create appointment"))
+   db.makeSqlQuery(queryTime, [input.Time]).then(info => {
+      if (info.length > 0) {
+         response.send(RES(-1, "Time slot is not available"))
          return
       }
 
-      console.log("🚀 ~ file: appointment.js:59 ~ db.makeSqlQuery ~ patientInfo:", patientInfo)
-
-      const queryDoctor = `
+      const queryPatient = `
       SELECT role, clinicName FROM clinic where cid = ?`
 
-      db.makeSqlQuery(queryDoctor, [input.DoctorId]).then(info => {
+      db.makeSqlQuery(queryPatient, [req.CID]).then(info => {
 
-         var doctorInfo;
+         var patientInfo = info[0]
 
-         if (info.length > 0) {
-            doctorInfo = info[0];
-         } else {
-            response.send(RES(-1, "No doctor info"))
+         if (patientInfo.role == "Doctor") {
+            response.send(RES(-1, "Doctor cannot create appointment"))
+            return
          }
 
-         console.log("🚀 ~ file: appointment.js:74 ~ db.makeSqlQuery ~ doctorInfo:", doctorInfo)
+         console.log("🚀 ~ file: appointment.js:59 ~ db.makeSqlQuery ~ patientInfo:", patientInfo)
 
+         const queryDoctor = `
+         SELECT role, clinicName FROM clinic where cid = ?`
 
-         const query = `
-         Insert into appointment
-         (doctorId, doctorName, patientId, patientName, time, status)
-         values
-         (?, ?, ?, ?, ?, ?)`
+         db.makeSqlQuery(queryDoctor, [input.DoctorId]).then(info => {
 
-         const queryParams = [
-            input.DoctorId, doctorInfo.clinicName, req.CID, patientInfo.clinicName, input.Time, true
-         ]
+            var doctorInfo;
 
-         db.makeSqlQuery(query, queryParams).then(info => {
-            response.send(RES(1, "create appointment record success"))
-         }).catch(err => {
-            if (err.errno == 1452) {
-               response.send(RES(-1, "invalid clinic"))
+            if (info.length > 0) {
+               doctorInfo = info[0];
             } else {
-               errorHandler.handleDbError(response, err)
+               response.send(RES(-1, "No doctor info"))
             }
+
+            console.log("🚀 ~ file: appointment.js:74 ~ db.makeSqlQuery ~ doctorInfo:", doctorInfo)
+
+
+            const query = `
+            Insert into appointment
+            (doctorId, doctorName, patientId, patientName, time, status)
+            values
+            (?, ?, ?, ?, ?, ?)`
+
+            const queryParams = [
+               input.DoctorId, doctorInfo.clinicName, req.CID, patientInfo.clinicName, input.Time, true
+            ]
+
+            db.makeSqlQuery(query, queryParams).then(info => {
+               response.send(RES(1, "create appointment record success"))
+            }).catch(err => {
+               if (err.errno == 1452) {
+                  response.send(RES(-1, "invalid clinic"))
+               } else {
+                  errorHandler.handleDbError(response, err)
+               }
+            })
          })
       })
    })
