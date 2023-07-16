@@ -32,17 +32,20 @@ router.post("/", (req, response) => {
 
    const query = `
           Insert into blog
-          (doctorId, title, description,updateDate, createDate)
+          (doctorId,doctorName,email,title, description,updateDate, createDate)
           values
-          (?, ?, ?, ?, ?)`;
+          (?, ?, ?, ?, ?, ?, ?)`;
 
    const queryParams = [
       input.CID,
+      input.doctorName,
+      input.email,
       input.title,
       input.description,
       currentDate,
       currentDate,
    ];
+
 
    db.makeSqlQuery(query, queryParams)
       .then((info) => {
