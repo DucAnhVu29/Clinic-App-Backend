@@ -6,22 +6,9 @@ const errorHandler = require("../common/errorHandler");
 
 router.get("/", (req, response) => {
    const query = `
-    SELECT * FROM feedback WHERE blogId = ?`;
-
+   SELECT * FROM blog WHERE doctorId = ?`;
+   console.log(req.CID);
    db.makeSqlQuery(query, [req.CID])
-      .then((info) => {
-         response.send(RES(1, info));
-      })
-      .catch((err) => {
-         errorHandler.handleDbError(response, err);
-      });
-});
-
-router.get("/:blogId", (req, response) => {
-   const query = `
-    SELECT * FROM feedback WHERE blogId = ?`;
-
-   db.makeSqlQuery(query, [req.params.blogId])
       .then((info) => {
          response.send(RES(1, info));
       })
@@ -32,7 +19,7 @@ router.get("/:blogId", (req, response) => {
 
 router.post("/", (req, response) => {
    var input = req.body;
-   if (input.message == null) {
+   if (input.CID == null || input.title == null) {
       errorHandler.handleMissingInputParams(response);
       return;
    }
@@ -45,16 +32,22 @@ router.post("/", (req, response) => {
    let currentDate = `${day}-${month}-${year}`;
 
    const query = `
-          Insert into feedback
-          (patientId,createDate, message)
+          Insert into blog
+          (doctorId, title, description,updateDate, createDate)
           values
-          (?, ?, ?)`;
+          (?, ?, ?, ?, ?)`;
 
-   const queryParams = [req.CID, currentDate, input.message];
+   const queryParams = [
+      input.CID,
+      input.title,
+      input.description,
+      currentDate,
+      currentDate,
+   ];
 
    db.makeSqlQuery(query, queryParams)
       .then((info) => {
-         response.send(RES(1, "create feedback"));
+         response.send(RES(1, "create blog"));
       })
       .catch((err) => {
          if (err.errno == 1452) {
@@ -67,7 +60,7 @@ router.post("/", (req, response) => {
 
 router.put("/", (req, response) => {
    var input = req.body;
-   if (input.id == null || input.message == null) {
+   if (input.id == null || input.title == null) {
       errorHandler.handleMissingInputParams(response);
       return;
    }
@@ -80,15 +73,19 @@ router.put("/", (req, response) => {
    let currentDate = `${day}-${month}-${year}`;
 
    const query = `
-    Update feedback
-    set message = ?
-    where id = ?`;
+   UPDATE blog
+   SET
+    title = ?,
+    description = ?,
+    updateDate= ?
+   WHERE id = ?;
+   `;
 
-   const queryParams = [input.message, input.id];
+   const queryParams = [input.title, input.description, currentDate, input.id];
 
    db.makeSqlQuery(query, queryParams)
       .then((info) => {
-         response.send(RES(1, "update feedback"));
+         response.send(RES(1, "update Blog"));
       })
       .catch((err) => {
          if (err.errno == 1452) {
@@ -107,14 +104,14 @@ router.delete("/", (req, response) => {
    }
 
    const query = `
-    DELETE FROM feedback
+    DELETE FROM blog
      where id = ?`;
 
    const queryParams = [input.id];
 
    db.makeSqlQuery(query, queryParams)
       .then((info) => {
-         response.send(RES(1, "deleted feedback"));
+         response.send(RES(1, "deleted blog"));
       })
       .catch((err) => {
          if (err.errno == 1452) {
