@@ -6,7 +6,7 @@ const errorHandler = require("../common/errorHandler");
 
 router.get("/", (req, response) => {
    const query = `
-   SELECT * FROM blog WHERE doctorId = ?`;
+   SELECT * FROM blog WHERE doctorId = ? and status = 1`;
    console.log(req.CID);
    db.makeSqlQuery(query, [req.CID])
       .then((info) => {
@@ -104,8 +104,11 @@ router.delete("/", (req, response) => {
    }
 
    const query = `
-    DELETE FROM blog
-     where id = ?`;
+   UPDATE blog
+   SET
+   status = 0
+   WHERE id = ?;
+   `;
 
    const queryParams = [input.id];
 
