@@ -63,7 +63,25 @@ router.put('/create', (req, response) => {
       errorHandler.handleDbError(response, err)
     }
   })
+})
 
+router.get('/doctors', (req, response) => {
+
+  const doctorRole = "Doctor"
+
+  const query = `
+  SELECT clinicName, phoneNo, address, email, cid from clinic
+  where role = 'Doctor'`
+
+  db.makeSqlQuery(query).then(info => {
+    if (info.length > 0) {
+      response.send(RES(1, info))
+    } else {
+      response.send(RES(-1, "There are no doctor"))
+    }
+  }).catch(err => {
+    errorHandler.handleDbError(response, err);
+  })
 })
 
 module.exports = router
