@@ -25,6 +25,7 @@ app.use(CustomMiddleWare.updateLastAction);
 app.use("/consultation", require("./routes/consultation"));
 app.use("/appointment", require("./routes/appointment"));
 app.use("/feedback", require("./routes/feedback"));
+app.use("/blog", require("./routes/blog"));
 
 app.listen(config.listeningPort);
 schedule.startDailyClearExpiredTokenJob();
