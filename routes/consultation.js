@@ -79,6 +79,18 @@ router.put('/create', (req, response) => {
 
 
     db.makeSqlQuery(query, queryParams).then(info => {
+
+      const queryChangeStatus = `
+      Update appointment
+      set status = 0
+      where id = ?`
+
+      db.makeSqlQuery(queryChangeStatus, input.AppointmentId).then(info => {
+        return
+      }).catch(err => {
+        errorHandler.handleDbError(response, err)
+      })
+
       response.send(RES(1, "create consultation record success"))
     }).catch(err => {
       console.log("ERRORRRRRRR")

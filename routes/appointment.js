@@ -26,14 +26,14 @@ router.get('/record', (req, response) => {
          SELECT id, doctorName, patientName, time
          from appointment 
          where doctorId= ? and time >= ? and time <= ?  and status = 1
-         order by time asc
+         order by time desc
          limit 10`
       } else {
          query = `
       SELECT id, doctorName, patientName, time
       from appointment 
-      where patientId= ? and time >= ? and time <= ? and status = 1
-      order by time asc
+      where patientId= ? and time >= ? and time <= ?
+      order by time desc
       limit 10`
       }
 
