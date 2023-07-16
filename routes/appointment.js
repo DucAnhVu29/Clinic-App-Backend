@@ -5,13 +5,6 @@ const db = require('../common/db').getInstance()
 const errorHandler = require('../common/errorHandler')
 
 router.get('/record', (req, response) => {
-   var start = req.query.from
-   var end = req.query.to
-
-   if (start == null || end == null) {
-      errorHandler.handleMissingInputParams(response)
-      return
-   }
 
    const queryRole = `
    SELECT role FROM clinic where cid = ?`
@@ -37,9 +30,7 @@ router.get('/record', (req, response) => {
       limit 10`
       }
 
-      console.log(query)
-
-      db.makeSqlQuery(query, [req.CID, start, end]).then(info => {
+      db.makeSqlQuery(query, [req.CID]).then(info => {
          response.send(RES(1, info))
       }).catch(err => {
          errorHandler.handleDbError(response, err)
