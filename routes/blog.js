@@ -32,7 +32,7 @@ router.post("/", (req, response) => {
 
    const query = `
           Insert into blog
-          (doctorId,doctorName,email,title, description,updateDate, createDate)
+          (doctorId,doctorName,email,title, description,updateDate, createDate,status)
           values
           (?, ?, ?, ?, ?, ?, ?)`;
 
@@ -44,6 +44,7 @@ router.post("/", (req, response) => {
       input.description,
       currentDate,
       currentDate,
+      1
    ];
 
 
