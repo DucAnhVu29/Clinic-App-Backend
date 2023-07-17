@@ -34,7 +34,7 @@ router.post("/", (req, response) => {
           Insert into blog
           (doctorId,doctorName,email,title, description,updateDate, createDate,status)
           values
-          (?, ?, ?, ?, ?, ?, ?)`;
+          (?, ?, ?, ?, ?, ?, ?,?)`;
 
    const queryParams = [
       input.CID,
