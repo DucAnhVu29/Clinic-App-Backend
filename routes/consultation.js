@@ -7,17 +7,36 @@ const errorHandler = require('../common/errorHandler')
 // get consultation for doctor
 router.get('/record', (req, response) => {
 
-  const query = `
-  SELECT doctorName, patientName, diagnosis, medication, consultationFee, time, followUp 
-  from consultation 
-  where doctorId= ? 
-  order by time desc
-  limit 10`
+  const queryRole = `
+   SELECT role FROM clinic where cid = ?`
 
-  db.makeSqlQuery(query, [req.CID]).then(info => {
-    response.send(RES(1, info))
-  }).catch(err => {
-    errorHandler.handleDbError(response, err)
+  db.makeSqlQuery(queryRole, [req.CID]).then(info => {
+    const role = info[0].role;
+
+    var query
+
+    if (role == "Doctor") {
+      query = `
+      SELECT doctorName, patientName, diagnosis, medication, consultationFee, time, followUp 
+      from consultation 
+      where doctorId= ? 
+      order by time desc
+      limit 10`
+    } else {
+      query = `
+      SELECT doctorName, patientName, diagnosis, medication, consultationFee, time, followUp 
+      from consultation 
+      where patientId= ? 
+      order by time desc
+      limit 10`
+    }
+
+
+    db.makeSqlQuery(query, [req.CID]).then(info => {
+      response.send(RES(1, info))
+    }).catch(err => {
+      errorHandler.handleDbError(response, err)
+    })
   })
 })
 
@@ -55,7 +74,7 @@ router.put('/create', (req, response) => {
   }
 
   const appointmentQuery = `
-  Select doctorName, patientName from appointment where id = ? and status = 1
+  Select doctorName, patientId, patientName from appointment where id = ? and status = 1
   `
 
   db.makeSqlQuery(appointmentQuery, input.AppointmentId).then(info => {
@@ -68,12 +87,12 @@ router.put('/create', (req, response) => {
 
     const query = `
     Insert into consultation
-    (appointmentId ,doctorId, doctorName, patientName, diagnosis, medication, consultationFee, time, followUp)
+    (appointmentId ,doctorId, doctorName, patientId, patientName, diagnosis, medication, consultationFee, time, followUp)
     values
-    (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
     const queryParams = [
-      input.AppointmentId, req.CID, names.doctorName, names.patientName, input.Diagnosis,
+      input.AppointmentId, req.CID, names.doctorName, names.patientId, names.patientName, input.Diagnosis,
       input.Medication, input.ConsultationFee, input.Time, input.FollowUp
     ]
 
